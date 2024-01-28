@@ -8,6 +8,8 @@ using MovieApp.API.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Identity;
+using MovieApp.API.Models.Enums;
 
 namespace MovieApp.API.Controllers;
 
@@ -36,7 +38,7 @@ public class AuthController : ControllerBase
             Username = model.Username,
             Email = model.Email,
             PasswordHash = hashedPassword,
-            Role = "User"
+            Role = UserRole.User.ToString()
         };
 
         _context.Users.Add(user);

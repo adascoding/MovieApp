@@ -2,13 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MovieApp.API.Data;
+using MovieApp.API.Helpers;
 using MovieApp.API.Models;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using MovieApp.API.Models.DTOs;
 
 namespace MovieApp.API.Controllers;
 
-[Authorize]
+//[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class MoviesController : ControllerBase
@@ -18,14 +18,44 @@ public class MoviesController : ControllerBase
     {
         _context = context;
     }
-    // GET: api/Movies
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Movie>>> GetMovies()
+    public async Task<ActionResult<IEnumerable<Movie>>> GetMovies([FromQuery] MovieQueryParameters queryParameters)
     {
-        return await _context.Movies.ToListAsync();
+        IQueryable<Movie> moviesQuery = _context.Movies.AsQueryable();
+
+        if (!string.IsNullOrEmpty(queryParameters.Genre))
+        {
+            var lowerCaseGenre = queryParameters.Genre.ToLower();
+            moviesQuery = moviesQuery.Where(m => m.Genre.ToLower().Equals(lowerCaseGenre));
+        }
+
+        if (!string.IsNullOrEmpty(queryParameters.SearchByTitle))
+        {
+            var lowerCaseSearchTerm = queryParameters.SearchByTitle.ToLower();
+            moviesQuery = moviesQuery.Where(m => m.Title.ToLower().Contains(lowerCaseSearchTerm));
+        }
+
+        if (!string.IsNullOrEmpty(queryParameters.SortBy))
+        {
+            var order = queryParameters.SortBy.StartsWith("-") ? "descending" : "ascending";
+            var propertyName = queryParameters.SortBy.TrimStart('+', '-');
+
+            moviesQuery = moviesQuery.OrderByCustom(propertyName, order);
+        }
+
+        int totalItemCount = await moviesQuery.CountAsync();
+
+        moviesQuery = moviesQuery
+            .Skip((queryParameters.PageNumber - 1) * queryParameters.PageSize)
+            .Take(queryParameters.PageSize);
+
+        return Ok(new MovieDataResult
+        {
+            Movies = moviesQuery,
+            TotalItemCount = totalItemCount
+        });
     }
 
-    // GET: api/Movies/5
     [HttpGet("{id}")]
     public async Task<ActionResult<Movie>> GetMovie(int id)
     {
@@ -39,7 +69,7 @@ public class MoviesController : ControllerBase
         return movie;
     }
 
-    // PUT: api/Movies/5
+    [Authorize(Roles = "Admin")]
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateMovie(int id, Movie movie)
     {
@@ -69,7 +99,7 @@ public class MoviesController : ControllerBase
         return NoContent();
     }
 
-    // POST: api/Movies
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<Movie>> CreateMovie(Movie movie)
     {
@@ -79,7 +109,7 @@ public class MoviesController : ControllerBase
         return CreatedAtAction(nameof(GetMovie), new { id = movie.Id }, movie);
     }
 
-    // DELETE: api/Movies/5
+    [Authorize(Roles = "Admin")]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteMovie(int id)
     {

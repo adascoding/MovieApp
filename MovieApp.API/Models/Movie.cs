@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MovieApp.API.Models.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MovieApp.API.Models;
 
@@ -14,7 +16,9 @@ public class Movie
     [Required]
     public DateTime ReleaseDate { get; set; }
     [Required]
-    public string Genre { get; set; }
-    public string Director { get; set; }
+    public MovieGenre Genre { get; set; }
+    public string? Director { get; set; }
     public int DurationInMinutes { get; set; }
+    [Column(TypeName = "decimal(2, 1)")]
+    public double Rating { get; set; }
 }
