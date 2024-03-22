@@ -11,14 +11,18 @@ public class Movie
     [Required]
     [StringLength(200)]
     public string Title { get; set; }
+    [Required]
     [StringLength(500)]
     public string Description { get; set; }
+    [Column(TypeName = "int")]
+    [Range(1900, 2100, ErrorMessage = "Please enter a valid 4-digit year.")]
+    public int ReleaseYear { get; set; }
     [Required]
-    public DateTime ReleaseDate { get; set; }
-    [Required]
-    public MovieGenre Genre { get; set; }
+    public string Genre { get; set; }
     public string? Director { get; set; }
     public int DurationInMinutes { get; set; }
-    [Column(TypeName = "decimal(2, 1)")]
-    public double Rating { get; set; }
+    public decimal UsersRating { get; set; }
+    public decimal ImdbRating { get; set; }
+    public string? ImgUrl { get; set; }
+
 }

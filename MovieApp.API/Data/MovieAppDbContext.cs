@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MovieApp.API.Models;
+using MovieApp.API.Models.Enums;
 
 namespace MovieApp.API.Data;
 

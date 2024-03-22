@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using MovieApp.API.Data;
+using MovieApp.API.Interfaces;
+using MovieApp.API.Repositories;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -46,6 +48,8 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContext<MovieAppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesDB")));
 
+builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<IMoviesRepository, MoviesRepository>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(opts =>

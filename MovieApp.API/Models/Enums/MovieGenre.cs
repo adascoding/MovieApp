@@ -5,5 +5,6 @@ public enum MovieGenre
     Action,
     Comedy,
     Drama,
+    Romance,
     SciFi
 }

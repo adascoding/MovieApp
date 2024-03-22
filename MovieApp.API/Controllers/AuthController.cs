@@ -1,85 +1,69 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using MovieApp.API.Data;
-using MovieApp.API.Models.DTOs;
+using Microsoft.AspNetCore.Identity;  // Add this namespace
 using MovieApp.API.Models;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Identity;
+using MovieApp.API.Models.DTOs;
 using MovieApp.API.Models.Enums;
+using MovieApp.API.Interfaces;
+using System;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
-namespace MovieApp.API.Controllers;
-
-[Route("api/[controller]")]
-[ApiController]
-public class AuthController : ControllerBase
+namespace MovieApp.API.Controllers
 {
-    private readonly MovieAppDbContext _context;
-    private readonly IConfiguration _configuration;
-
-    public AuthController(MovieAppDbContext context, IConfiguration configuration)
+    [Route("api/[controller]")]
+    [ApiController]
+    public class AuthController : ControllerBase
     {
-        _context = context;
-        _configuration = configuration;
-    }
-    [HttpPost("Register")]
-    public async Task<ActionResult> Register([FromBody] RegisterDTO model)
-    {
-        if (_context.Users.Any(u => u.Username == model.Username))
-            return BadRequest("User already exists.");
+        private readonly IAuthRepository _authRepository;
+        private readonly ILogger<AuthController> _logger;
 
-        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(model.Password);
-
-        var user = new User
+        public AuthController(IAuthRepository authRepository, ILogger<AuthController> logger)
         {
-            Username = model.Username,
-            Email = model.Email,
-            PasswordHash = hashedPassword,
-            Role = UserRole.User.ToString()
-        };
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-
-        return Ok();
-    }
-
-    [HttpPost("Login")]
-    public async Task<ActionResult> Login([FromBody] LoginDTO model)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
-
-        if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.PasswordHash))
-        {
-            return Unauthorized();
+            _authRepository = authRepository;
+            _logger = logger;
         }
 
-        var token = GenerateJwtToken(user);
+        [HttpPost("Register")]
+        public async Task<ActionResult> Register([FromBody] RegisterDTO model)
+        {
+            try
+            {
+                if (await _authRepository.UserExistsAsync(model.Username))
+                {
+                    _logger.LogInformation($"User '{model.Username}' already exists.");
+                    return BadRequest("User already exists.");
+                }
+                await _authRepository.RegisterAsync(model);
 
-        return Ok(new { Token = token });
-    }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred during user registration.");
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
 
-    private string GenerateJwtToken(User user)
-    {
-        var secretKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.GetValue<string>("Authentication:SecretKey")));
-        var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
+        [HttpPost("Login")]
+        public async Task<ActionResult> Login([FromBody] LoginDTO model)
+        {
+            try
+            {
+                var token = await _authRepository.LoginAsync(model);
 
-        List<Claim> claims = new();
-        claims.Add(new(ClaimTypes.Name, user.Username));
-        claims.Add(new(ClaimTypes.Role, user.Role));
+                if (token == null)
+                {
+                    return Unauthorized();
+                }
 
-        var token = new JwtSecurityToken(
-            issuer: _configuration.GetValue<string>("Authentication:Issuer"),
-            audience: _configuration.GetValue<string>("Authentication:Audience"),
-            claims: claims,
-            notBefore: DateTime.UtcNow,
-            expires: DateTime.UtcNow.AddMinutes(15),
-            signingCredentials: signingCredentials
-            );
-
-        return new JwtSecurityTokenHandler().WriteToken(token);
+                return Ok(new { Token = token });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception or handle it as needed
+                return StatusCode(500, "Internal Server Error");
+            }
+        }
     }
 }
