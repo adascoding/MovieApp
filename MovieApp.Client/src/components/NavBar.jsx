@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { IoMenu, IoClose } from "react-icons/io5";
 import { BiMovie } from "react-icons/bi";
+import { Link } from 'react-router-dom';
+import { useMovieContext } from "../store/MovieContext";
 
 export default function NavBar() {
   const [nav, setNav] = useState(true);
+  const { user } = useMovieContext();
 
   const handleNav = () => {
     setNav(!nav);
   };
 
   return (
-    <div className="bg-stone-100 border-b border-gray-400 w-full relative z-10"> {/* Set z-index to a higher value */}
+    <div className="bg-stone-100 border-b border-gray-400 w-full relative z-10">
       <div className="mx-auto max-w-5xl">
         <div className="flex justify-between items-center h-20 mx-auto px-4">
           <a href="/">
@@ -20,8 +23,12 @@ export default function NavBar() {
             </div>
           </a>
           <ul className="hidden md:flex">
-            <li className="p-4"><a href="/" className="font-sans text-lg hover:underline">Home</a></li>
-            <li className="p-4"><a href="#" className="font-sans text-lg hover:underline">Login</a></li>
+            <li className="p-4"><Link to="/" className="font-sans text-lg hover:underline">Home</Link></li>
+            {user ? (
+                <li className="p-4"><Link to="/profile" className="font-sans text-lg hover:underline">{user.username}</Link></li>
+              ) : (
+                <li className="p-4"><Link to="/login" className="font-sans text-lg hover:underline">Login</Link></li>
+              )}
           </ul>
           <div onClick={handleNav} className={`block md:hidden`}>
             {!nav ? <IoClose size={20} /> : <IoMenu size={20} />}
@@ -34,10 +41,12 @@ export default function NavBar() {
               </div>
             </a>
             <ul className="pt-0">
-              <li className="p-4 border-b border-gray-100"><a href="/" className="font-sans text-lg hover:underline">Home</a></li>
-              <li className="p-4 border-b border-gray-100"><a href="#" className="font-sans text-lg hover:underline">Login</a></li>
-              <li className="p-4 border-b border-gray-100"><a href="#" className="font-sans text-lg hover:underline">Swagger</a></li>
-              <li className="p-4 border-b border-gray-100"><a href="#" className="font-sans text-lg hover:underline">Github</a></li>
+              <li className="p-4 border-b border-gray-100"><Link to="/" className="font-sans text-lg hover:underline">Home</Link></li>
+              {user ? (
+                <li className="p-4 border-b border-gray-100"><Link to="/profile" className="font-sans text-lg hover:underline">{user.username}</Link></li>
+              ) : (
+                <li className="p-4 border-b border-gray-100"><Link to="/login" className="font-sans text-lg hover:underline">Login</Link></li>
+              )}
             </ul>
           </div>
         </div>

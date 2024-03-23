@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useMovieContext } from "../store/MovieContext";
 
 export default function SortSelection() {
@@ -19,7 +19,7 @@ export default function SortSelection() {
         const selectedValue = sortOptions.find(option => option.label === selectedSort)?.value;
         if (selectedValue) {
             updateMovies({ sortBy: selectedValue, currentPage: 1 });
-            setIsOpen(false); // Close the dropdown after selecting an option
+            setIsOpen(false);
         }
     };
 

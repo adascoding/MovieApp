@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;  // Add this namespace
+using Microsoft.AspNetCore.Identity;
 using MovieApp.API.Models;
 using MovieApp.API.Models.DTOs;
 using MovieApp.API.Models.Enums;
@@ -8,6 +8,7 @@ using MovieApp.API.Interfaces;
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using MovieApp.API.Models.DTOs;
 
 namespace MovieApp.API.Controllers
 {
@@ -46,22 +47,21 @@ namespace MovieApp.API.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<ActionResult> Login([FromBody] LoginDTO model)
+        public async Task<ActionResult<UserDTO>> Login([FromBody] LoginDTO model)
         {
             try
             {
-                var token = await _authRepository.LoginAsync(model);
+                var userDto = await _authRepository.LoginAsync(model);
 
-                if (token == null)
+                if (userDto == null)
                 {
                     return Unauthorized();
                 }
 
-                return Ok(new { Token = token });
+                return Ok(userDto);
             }
             catch (Exception ex)
             {
-                // Log the exception or handle it as needed
                 return StatusCode(500, "Internal Server Error");
             }
         }

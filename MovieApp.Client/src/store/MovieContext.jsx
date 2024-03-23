@@ -16,6 +16,7 @@ export const MovieProvider = ({ children }) => {
     genreFilter: '',
     sortBy: 'Title'
   });
+  const [user, setUser] = useState();
 
   useEffect(() => {
     const fetchMovies = async () => {
@@ -42,9 +43,12 @@ export const MovieProvider = ({ children }) => {
   const updateMovies = (newState) => {
     setMovies((prev) => ({ ...prev, ...newState }));
   };
+  const updateUser = (newUser) => {
+    setUser(newUser);
+  }
 
   return (
-    <MovieContext.Provider value={{ movies, loading, error, updateMovies}}>
+    <MovieContext.Provider value={{ movies, loading, error, updateMovies, user, setUser:updateUser}}>
       {children}
     </MovieContext.Provider>
   );

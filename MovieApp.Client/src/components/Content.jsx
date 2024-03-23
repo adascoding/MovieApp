@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useMovieContext } from '../store/MovieContext.jsx';
 import SearchBar from './SearchBar.jsx';
 import MovieList from './MovieList.jsx';
@@ -17,6 +17,7 @@ export default function Content() {
 
     return (
         <div className="w-full">
+            
             {selectedMovie ? (
                 <div className='max-w-5xl mx-auto mt-4 mb-4'>
                 <MovieItem movie={selectedMovie} onClose={() => setSelectedMovie(null)} />

@@ -44,7 +44,7 @@ public class AuthRepository : IAuthRepository
 
         return true;
     }
-    public async Task<string> LoginAsync(LoginDTO model)
+    public async Task<UserDTO> LoginAsync(LoginDTO model)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == model.Username);
 
@@ -54,7 +54,16 @@ public class AuthRepository : IAuthRepository
         }
 
         var token = GenerateJwtToken(user);
-        return token;
+
+        var userDto = new UserDTO
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Role = user.Role,
+            Token = token
+        };
+
+        return userDto;
     }
     public async Task<bool> UserExistsAsync(string username)
     {
@@ -74,7 +83,7 @@ public class AuthRepository : IAuthRepository
             audience: _configuration.GetValue<string>("Authentication:Audience"),
             claims: claims,
             notBefore: DateTime.UtcNow,
-            expires: DateTime.UtcNow.AddMinutes(15),
+            expires: DateTime.UtcNow.AddHours(2),
             signingCredentials: signingCredentials
             );
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { useMovieContext } from "../store/MovieContext";
 
 export default function GenreList() {
