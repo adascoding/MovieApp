@@ -40,11 +40,9 @@ const AuthService = {
             throw error;
         }
     },
-
     
     async logout() {
         try {
-            // Perform logout action, such as clearing local storage, revoking tokens, etc.
             localStorage.removeItem('user');
         } catch (error) {
             console.error('Error logging out:', error);
@@ -53,8 +51,7 @@ const AuthService = {
     },
 
     isLoggedIn() {
-        // Check if a user is logged in by verifying if their credentials exist in local storage or any other relevant method
-        return !!localStorage.getItem('user'); // Example: Check if 'user' exists in local storage
+        return !!localStorage.getItem('user');
     }
     
 };
