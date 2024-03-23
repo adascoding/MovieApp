@@ -1,15 +1,16 @@
-# Movie App
+# 🎬 Welcome to Movie App 🍿
 
-Welcome to the Movie App!
+## 🚀 Tech Stack
 
-## Features
+**Frontend**
+- **React.js:** Power your user interface with React.js, a modern and efficient JavaScript library for building dynamic web applications.
+- **React Router:** Seamlessly handle navigation and routing within the application to ensure a smooth user experience.
+- **Tailwind CSS:** Create stylish and responsive designs effortlessly using Tailwind CSS, a utility-first CSS framework.
+- **React Icons:** Access a vast library of high-quality icons to enhance the visual appeal and usability of the application.
 
-- **Search:** Easily search for movies by title
-- **Details:** Get comprehensive information about each movie, including plot summaries and ratings.
+**Backend**
+- **.NET Core:** Harness the power of .NET Core, a versatile framework for building robust and scalable backend services.
+- **Entity Framework Core:** Simplify data access and management with Entity Framework Core, an advanced object-relational mapper (ORM).
+- **JWT Authentication:** Implement secure user authentication using JSON Web Tokens (JWT) to protect user data and ensure confidentiality.
 
-## Tech Stack
-
-The Movie App is built using the following technologies:
-
-- **Frontend:** React.js
-- **Backend:** .NET Core
+🎬 **Lights, Camera, Action!** Dive into the mesmerizing world of movies with Movie App today! 🍿✨
