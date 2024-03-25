@@ -15,6 +15,9 @@
 
 🎬 **Lights, Camera, Action!** Dive into the mesmerizing world of movies with Movie App today! 🍿✨
 
+### 📸 Screenshots
+Here are some screenshots of our Movie App:
+![Screenshot1](screenshot1.png)
 #### Further Improvements
 1. **Ratings and Reviews:** Allow users to rate and leave reviews for movies, enhancing engagement and providing valuable feedback.
 2. **Advanced Filtering:** Implement advanced filtering options such as genre, release year, rating, and more to help users discover new movies tailored to their preferences.
